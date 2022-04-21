@@ -1,6 +1,7 @@
-package com.hea.eztalk.domain.chatroom.entity.chatentry;
+package com.hea.eztalk.domain;
 
-import com.hea.eztalk.domain.chatroom.entity.chatroom.ChatRoom;
+import com.hea.eztalk.domain.chatroom.ChatRoom;
+import com.hea.eztalk.domain.chatentry.ChatEntry;
 import org.springframework.data.repository.CrudRepository;
 
 

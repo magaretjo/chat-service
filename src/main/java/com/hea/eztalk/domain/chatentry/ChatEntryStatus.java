@@ -1,4 +1,4 @@
-package com.hea.eztalk.domain.chatroom.entity.chatentry;
+package com.hea.eztalk.domain.chatentry;
 
 public enum ChatEntryStatus {
     READY,             // 채팅방에 처음 입장 (채팅창에서 일단 말을 하면 READY --> ACTIVATE 됨 )

@@ -1,4 +1,4 @@
-package com.hea.eztalk.domain.chatroom.entity.chatroom;
+package com.hea.eztalk.domain.chatroom;
 
 
 public enum ChatRoomType {

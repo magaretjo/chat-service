@@ -2,28 +2,35 @@ package com.hea.eztalk;
 
 import com.hea.eztalk.domain.ChatEntryRepository;
 import com.hea.eztalk.domain.ChatRoomRepository;
-import com.hea.eztalk.abandoned.RegularChatRoomRepository;
-import com.hea.eztalk.abandoned.TemporaryChatRoomRepository;
+import com.hea.eztalk.domain.RegularChatRoomRepository;
+import com.hea.eztalk.domain.TemporaryChatRoomRepository;
 import com.hea.eztalk.domain.chatentry.ChatEntry;
 import com.hea.eztalk.domain.chatroom.ChatRoom;
 import com.hea.eztalk.domain.chatroom.RegularChatRoom;
-import com.hea.eztalk.domain.chatroom.TemporaryChatRoom;
 //import com.hea.eztalk.dto.ChatEntryDto;
+import com.hea.eztalk.service.ChatService;
 import com.hea.eztalk.vo.RequestMember;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
 @SpringBootTest
 class ChatServiceApplicationTest {
+
+    @Autowired
+    ChatService chatService;
 
     @Autowired
     ChatRoomRepository chatRoomRepository;
@@ -40,69 +47,66 @@ class ChatServiceApplicationTest {
 
     @BeforeEach
     @Transactional
-    public void makeChatRoom() throws Exception {
+    public void 채팅룸만들기() throws Exception {
 
-        Long communityId = 1L;
-        ChatRoom chatRoom = new TemporaryChatRoom(communityId);
-//        chatRoomRepository.save(chatRoom);
-
-
-        communityId = 2L;
-        chatRoom = new RegularChatRoom(communityId);
-//        chatRoomRepository.save(chatRoom);
-
+        String communityId = "ABCD";
+        chatService.createCommunityChatRooms(communityId);
     }
 
+    @Test
     @Transactional
-    public void testChatRoom() throws Exception {
-        Long communityId = 1L;
+    @DisplayName("채팅방 중복 개설 불가")
+    public void createChatRoomsError() throws Exception {
+        String communityId = "ABCD";
 
-        Optional<TemporaryChatRoom> optChatRoom = tempChatRoomRepository.findByCommunityId(communityId);
-        if (optChatRoom.isEmpty()) {
-            System.out.println("Cannot find Chat-Room by Community ID : " + communityId);
+//        chatService.createCommunityChatRooms(communityId);
+        assertThrows(DuplicateKeyException.class,
+                () -> chatService.createCommunityChatRooms(communityId));
+    }
+
+    @Test
+    @Transactional
+    public void testGetChatRoom() throws Exception {
+        String communityId = "ABCD";
+        ChatRoom chatRoom = new RegularChatRoom(communityId);
+
+        ChatRoom regularChatRoom = chatService.getRegularChatRoom(communityId);
+        if (regularChatRoom == null) {
+            System.out.println("Cannot find ChatRoom by Community ID : " + communityId);
         }
-        TemporaryChatRoom room1 = optChatRoom.get();
-        System.out.println("Chat-Room : " + room1);
-
-        assertEquals("Temporary", room1.getChatRoomType());
+        System.out.println(regularChatRoom);
+        assertThat(regularChatRoom.getChatRoomType()).isEqualTo("Regular");
     }
 
     @Test
     @Transactional
     public void testChatEntry() throws Exception {
-        Long communityId = 2L;
-//        ChatRoom chatRoom = new RegularChatRoom();
-//        chatRoom.setCommunityId(communityId);
+        String communityId = "ABCD";
 
-        Optional<RegularChatRoom> optChatRoom = regularChatRoomRepository.findByCommunityId(communityId);
-        if (optChatRoom.isEmpty()) {
-            System.out.println("Cannot find Chat-Room by Community ID : " + communityId);
-        }
-        RegularChatRoom room2 = optChatRoom.get();
-/*
+        ChatRoom chatRoom = regularChatRoomRepository.findByCommunityId(communityId).get();
 
         String memberId1 = UUID.randomUUID().toString();
-        RequestMember member = new RequestMember();
-        member.setMemberId(memberId1);
-        ChatEntry entry1 = ChatEntry.join(room2, member);
+        RequestMember member1 = new RequestMember();
+        member1.setMemberId(memberId1);
+        ChatEntry entry1 = ChatEntry.join(chatRoom, member1);
         entry1.setNickName("냐옹이");
         entry1.activate();
         chatEntryRepository.save(entry1);
 
         String memberId2 = UUID.randomUUID().toString();
-        ChatEntry entry2 = ChatEntry.join(room2, new RequestMember(memberId2));
+        RequestMember member2 = new RequestMember();
+        member2.setMemberId(memberId1);
+        ChatEntry entry2 = ChatEntry.join(chatRoom, member2);
         entry2.setNickName("바둑이");
         chatEntryRepository.save(entry2);
 
-//        List<ChatEntryDto> entries = new ArrayList<>();
-        Iterable<ChatEntry> chatEntries = chatEntryRepository.findAllByChatRoom(room2);
-//        chatEntries.forEach(c -> entries.add( new ModelMapper().map(c, ChatEntryDto.class)));
+        List<ChatEntry> entries = new ArrayList<>();
+        Iterable<ChatEntry> chatEntries = chatEntryRepository.findAllByChatRoomId(chatRoom.getId());
+        chatEntries.forEach(c -> entries.add( c ));
 
         System.out.println("Chatting Entries : " + chatEntries);
-//        System.out.println("Chatting Entries (DTOs) : " + entries);
+        System.out.println("Chatting Entries (DTOs) : " + entries);
 
-//        assertEquals(2, entries.stream().count());
-*/
-
+        assertThat(entries.stream().count()).isEqualTo(2);
     }
 }

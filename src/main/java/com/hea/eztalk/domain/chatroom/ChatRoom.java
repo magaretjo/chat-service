@@ -1,10 +1,14 @@
 package com.hea.eztalk.domain.chatroom;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.hea.eztalk.domain.chatentry.ChatEntry;
 import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -24,11 +28,11 @@ public abstract class ChatRoom implements Serializable {
 
     // this is reference key of Community-Service
     @Column(name = "community_id")
-    private Long communityId;
-        public Long getCommunityId() {
+    private String communityId;
+        public String getCommunityId() {
             return communityId;
         }
-        public void setCommunityId(Long communityId) {
+        public void setCommunityId(String communityId) {
             this.communityId = communityId;
         }
 
@@ -37,11 +41,16 @@ public abstract class ChatRoom implements Serializable {
     private LocalDateTime createdAt;
         public LocalDateTime getCreatedAt() { return createdAt; }
 
+//    @JsonIgnore
+//    @OneToMany (mappedBy = "chatRoom", fetch = FetchType.LAZY)
+//    private List<ChatEntry> chatEntries = new ArrayList<>();
+//        public List<ChatEntry> getChatEntries() { return chatEntries; }
+
     // cannot create room without communityId
     protected ChatRoom() {}
 
-    public ChatRoom(Long communityId) {
-        this.id = UUID.randomUUID().toString();
+    public ChatRoom(String communityId) {
+        this.id = UUID.randomUUID().toString().substring(0, 18);
         this.communityId = communityId;
         this.createdAt = LocalDateTime.now();
     }

@@ -8,6 +8,6 @@ import java.util.Date;
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class RequestChatRoom {
-    private Long communityId;
+    private String communityId;
     private String chatRoomId;
 }

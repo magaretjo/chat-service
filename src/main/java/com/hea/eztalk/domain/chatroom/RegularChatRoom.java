@@ -11,7 +11,7 @@ public class RegularChatRoom extends ChatRoom  implements Serializable {
     // cannot create room without communityId
     protected RegularChatRoom() {}
 
-    public RegularChatRoom(Long communityId) {
+    public RegularChatRoom(String communityId) {
         super(communityId);
     }
 

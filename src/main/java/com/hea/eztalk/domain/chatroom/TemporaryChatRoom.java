@@ -10,7 +10,7 @@ public class TemporaryChatRoom extends ChatRoom  implements Serializable {
     // cannot create room without communityId
     protected TemporaryChatRoom() {}
 
-    public TemporaryChatRoom(Long communityId) {
+    public TemporaryChatRoom(String communityId) {
         super(communityId);
     }
 

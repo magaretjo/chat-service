@@ -1,5 +1,6 @@
 package com.hea.eztalk.domain.chatentry;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.hea.eztalk.domain.chatroom.ChatRoom;
 import com.hea.eztalk.vo.RequestMember;
 import org.hibernate.annotations.ColumnDefault;
@@ -20,7 +21,8 @@ public class ChatEntry {
         return id;
     }
 
-    @ManyToOne (fetch = LAZY) //, cascade = CascadeType.ALL)
+    @JsonIgnore
+    @ManyToOne (fetch = FetchType.LAZY) //, cascade = CascadeType.ALL)
     @JoinColumn(name = "chatroom_id")
     private ChatRoom chatRoom;
         public ChatRoom getChatRoom() {
@@ -106,7 +108,7 @@ public class ChatEntry {
     public String toString() {
         return "ChatEntry{" +
                 "id=" + id +
-                ", chatRoom=" + chatRoom +
+                //", chatRoom=" + chatRoom +
                 ", memberId='" + memberId + '\'' +
                 ", nickName='" + nickName + '\'' +
                 ", status=" + status +
